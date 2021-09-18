@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GPS Data Viewer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CHANGE ME">
+    <meta name="keywords" content="CHANGE ME">
+    <meta name="author" content="CHANGE ME">
+    <!-- Load jquery, bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <!-- Custom CSS End -->
+
+</head>
+
+<body>
+    <h1>GPS Data Viewer</h2>
+
+      <div id="everything">
+
+      <div id="blah"></div>
+      <hr>
+      <div id="FILE-LOG-PANEL"><strong>File Log Panel</strong> 
+      <div class="container-fluid">
+          <table id="fileTable" class="table table-striped table-condensed table-bordered table-nonfluid">
+            <thead>
+              <tr>
+                  <th style="min-width: 250px;">File name (click to download)</th>
+                  <th style="min-width: 100px;">Version</th>
+                  <th style="min-width: 250px;">Creator</th>
+                  <th style="min-width: 200px;">Number of waypoints</th>
+                  <th style="min-width: 200px;">Number of routes</th>
+                  <th style="min-width: 200px;">Number of tracks</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        
+        </div>
+       </div>
+      <div>
+        <form ref='uploadForm'
+          id='uploadForm'
+          action='/upload'
+          method='post'
+          encType="multipart/form-data">
+          <div class="form-group">
+            <input type="file" name="uploadFile" class="btn btn-secondary">
+            <input type='submit' value='Upload' class="btn btn-secondary">
+          </div>
+        </form>
+      </div>
+      <h3 id = "NO-FILES">No files</h3>
+      <div><strong>Log Panel</strong> 
+        
+      </div>
+      <hr>
+
+    
+        <div id='fileDropDownListDivider'></div>
+        <select id='fileDropDownList' style='height: 25px; width: 200px;'>
+        </select>
+
+        <div id="compTable" class="container-fluid">
+            <table id="componentTable" class="table table-striped table-condensed table-bordered table-nonfluid">
+              <thead>
+                <tr>
+                    <th style="min-width: 200px;">Component (click to show other data)</th>
+                    <th style="min-width: 200px;">Name</th>
+                    <th style="min-width: 200px;">Number of points</th>
+                    <th style="min-width: 200px;">Length</th>
+                    <th style="min-width: 200px;">Loop</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+        </div>
+
+      </hr>
+      <div id="changeDiv" >
+        <form ref='nameChange'
+              id='nameChange'>
+              <div class="form-group">
+                    <label for="newName">Change Route/Track Name</label>
+                    <input type="text" class="form-control" id="currentName" value="" placeholder="Name to change" readonly>
+                    <input type="text" class="form-control" id="newName" value="" placeholder="New name">
+              </div>
+            <div class="form-group">
+                <input id="submitNameChange" type='submit' class="btn btn-secondary" value="Change Name">
+            </div>
+        </form>
+      </div>
+    <hr>
+    <div><strong>Create GPX</strong>
+      <form id="data" onsubmit="return make_json(this); return false;" method="post">
+        File Name: <input type="text" name="file" id="file"/>
+        Version: <input type="text" name="version" id="version"/>
+        Creator: <input type="text" name="creator" id="creator"/>
+        
+        
+        <input type="button" id="button1" value="Make New GPX"/>
+        </form>
+        
+        <pre id="output">
+        </pre>
+    </div>
+    <hr>
+    <div><strong>Add Route</strong>
+      <form id="routeName" onsubmit="return make_json(this); return false;" method="post">
+        Name: <input type="text" name="name" id="name"/>
+        <input type="button" id="button3" value="Add Route"/>
+      </form>
+
+      <div id="wayTableDiv" class="container-fluid">
+        <table id="waypointTable" class="table table-striped table-condensed table-bordered table-nonfluid">
+          <thead>
+            <tr>
+                <th style="min-width: 75px;">Latitude</th>
+                <th style="min-width: 75px;">Longitude</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+      <form id="routeData" onsubmit="return make_json(this); return false;" method="post">
+        Latitude: <input type="text" name="lat" id="lat"/>
+        Longitude: <input type="text" name="lon" id="lon"/>
+        <input type="button" id="button2" value="Add Waypoint"/>
+        <input type="button" id="button4" value="Clear Waypoints"/>
+      </form>
+        
+        <pre id="output">
+        </pre>
+    </div>
+    <hr>
+    <div><strong>Find Path Between</strong>
+      <form id="pathBetween" onsubmit="return make_json(this); return false;" method="post">
+        Source Latitude: <input type="text" name="sourceLat" id="sourceLat"/>
+        Source Longitude: <input type="text" name="sourceLon" id="sourceLon"/>
+        Dest Latitude: <input type="text" name="destLat" id="destLat"/>
+        Dest Longitude: <input type="text" name="destLon" id="destLon"/><br/>
+        Tolerance: <input type="text" name="tol" id="tol"/>
+        <input type="button" id="button5" value="Find Path"/>
+      </form>
+
+      <div id="findTableDiv" class="container-fluid">
+        <table id="findTable" class="table table-striped table-condensed table-bordered table-nonfluid">
+          <thead>
+            <tr>
+              <th style="min-width: 200px;">Component (click to show other data)</th>
+              <th style="min-width: 200px;">Name</th>
+              <th style="min-width: 200px;">Number of points</th>
+              <th style="min-width: 200px;">Length</th>
+              <th style="min-width: 200px;">Loop</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    </div>
+    <hr>
+    <div><strong>DATABASE FUNCTIONALITY</strong>
+    <hr>
+
+    <div id="loginPanel"><strong>Login</strong>
+      <form id="login" onsubmit="return make_json(this); return false;" method="post">
+        username: <input type="text" name="username" id="username"/>
+        password: <input type="text" name="password" id="password"/>
+        database name: <input type="text" name="DBname" id="DBname"/>
+        <input type="button" id="loginEnter" value="Login"/>
+      </form>
+
+    </div>
+
+    <div id="dbButtons">
+      <input type="button" id="storeFiles" value="Store All Files"/>
+      <input type="button" id="clearFiles" value="Clear All Data"/>
+      <input type="button" id="status" value="Display DB Status"/>
+   </div>
+
+    <hr>
+    <div id="query"><strong>Queries</strong>
+      <br/><select id='fileList' style='height: 25px; width: 200px;'>
+      </select>
+
+      <br/>
+      <label for="cars">Choose a Query:</label>
+      <select name="queries" id="queries">
+        <option value="RRL">Return Routes by Length (ascending)</option>
+        <option value="RRN">Return Routes by Name (alphabetical)</option>
+        <option value="RFL">Display Routes From File By Length (ascending)</option>
+        <option value="RFN">Display Routes From File By name (alphabetical)</option>
+        <option value="PRI">Display points from Route ID</option>
+        <option value="PFL">Display points From File By length (ascending)</option>
+        <option value="PFN">Display points From File By name (alphabetical)</option>
+      </select>
+      <input type="button" id="execute" value="Execute Query"/>
+      <br/><form id="routeInfo" onsubmit="return make_json(this); return false;" method="post">
+        Route ID: <input type="text" name="routeID" id="routeID"/>
+      </form>
+      
+
+      <div id = "rTable">
+        <div id="routeTableDiv" class="container-fluid">
+          <table id="routeTable" class="table table-striped table-condensed table-bordered table-nonfluid">
+            <thead>
+              <tr>
+                  <th style="min-width: 75px;">Route ID</th>
+                  <th style="min-width: 75px;">Name</th>
+                  <th style="min-width: 75px;">Length</th>
+                  <th style="min-width: 75px;">GPX ID</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id = "wTable">
+        <div id="routepointTableDiv" class="container-fluid">
+          <table id="routepointTable" class="table table-striped table-condensed table-bordered table-nonfluid">
+            <thead>
+              <tr>
+                  <th style="min-width: 100px;">Point ID</th>
+                  <th style="min-width: 100px;">Point Index</th>
+                  <th style="min-width: 75px;">Latitude</th>
+                  <th style="min-width: 75px;">Longitude</th>
+                  <th style="min-width: 75px;">Route ID</th>
+                  <th style="min-width: 75px;">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      </div>
+    </div>
+
+    </div>
+
+    <!-- Leave me at the bottom of body -->
+    <script src="/index.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
